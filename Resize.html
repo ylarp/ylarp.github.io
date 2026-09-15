@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Page PDF Resizer</title>
+    <!-- Load pdf-lib from CDN -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #111;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .bulk-actions {
+            background: #eef6ff;
+            border: 1px solid #b6d4fe;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .bulk-section {
+            border-bottom: 1px solid #cfe2ff;
+            padding-bottom: 0.75rem;
+        }
+        .bulk-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .bulk-actions h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: #004085;
+        }
+        .bulk-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .bulk-row input[type="number"] {
+            width: 100px;
+        }
+        .bulk-row select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+        }
+        .bulk-row button {
+            width: auto;
+            padding: 0.5rem 1rem;
+            background-color: #28a745;
+        }
+        .bulk-row button:hover {
+            background-color: #218838;
+        }
+        .btn-secondary {
+            background-color: #17a2b8 !important;
+        }
+        .btn-secondary:hover {
+            background-color: #138496 !important;
+        }
+        .btn-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800 !important;
+        }
+        .page-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .dimensions-row {
+            display: flex;
+            gap: 1rem;
+        }
+        .input-group {
+            flex: 1;
+        }
+        .input-group label {
+            font-size: 0.875rem;
+            color: #555;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .lock-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #444;
+        }
+        .lock-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .lock-group input[type="checkbox"] {
+            cursor: pointer;
+        }
+        button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0052a3;
+        }
+        #status {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #d93025;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Adjust PDF Page Size (pt)</h1>
+    
+    <div class="form-group">
+        <label for="pdf-upload">Upload PDF Document</label>
+        <input type="file" id="pdf-upload" accept="application/pdf">
+    </div>
+
+    <div id="settings-container" style="display: none;">
+        <div class="bulk-actions">
+            <div class="bulk-section">
+                <h3>Match Width Across Pages</h3>
+                <div class="bulk-row">
+                    <label for="source-page-num" style="margin-bottom: 0;">Copy width from Page:</label>
+                    <input type="number" id="source-page-num" min="1" value="1">
+                    <button type="button" id="apply-width-all-btn">Apply Width to All</button>
+                </div>
+            </div>
+
+            <div class="bulk-section">
+                <h3>Quick Actions</h3>
+                <div class="bulk-row">
+                    <button type="button" id="apply-smallest-width-btn" class="btn-secondary">Resize All Pages to Smallest Width</button>
+                </div>
+            </div>
+
+            <div class="bulk-section">
+                <h3>Scale All Pages by Percentage</h3>
+                <div class="bulk-row" style="margin-bottom: 0.75rem;">
+                    <label for="scale-percent" style="margin-bottom: 0;">Scale Factor (%):</label>
+                    <input type="number" id="scale-percent" min="1" step="1" value="100">
+                </div>
+                <div class="bulk-row">
+                    <label for="scale-dimension" style="margin-bottom: 0;">Apply to:</label>
+                    <select id="scale-dimension">
+                        <option value="both">Both Width & Height</option>
+                        <option value="width">Width Only</option>
+                        <option value="height">Height Only</option>
+                    </select>
+                    <button type="button" id="apply-scale-btn" class="btn-warning">Apply Percentage Scale</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="pages-list"></div>
+        <button id="process-btn">Apply & Download PDF</button>
+    </div>
+    
+    <div id="status"></div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('pdf-upload');
+    const settingsContainer = document.getElementById('settings-container');
+    const pagesList = document.getElementById('pages-list');
+    const processBtn = document.getElementById('process-btn');
+    const applyWidthAllBtn = document.getElementById('apply-width-all-btn');
+    const applySmallestWidthBtn = document.getElementById('apply-smallest-width-btn');
+    const applyScaleBtn = document.getElementById('apply-scale-btn');
+    const sourcePageInput = document.getElementById('source-page-num');
+    const scalePercentInput = document.getElementById('scale-percent');
+    const scaleDimensionSelect = document.getElementById('scale-dimension');
+    const statusDiv = document.getElementById('status');
+
+    let loadedPdfBytes = null;
+    let pageRatios = [];
+    let totalPagesCount = 0;
+
+    // Listen for file upload to generate input fields for every page
+    fileInput.addEventListener('change', async (e) => {
+        statusDiv.textContent = '';
+        pagesList.innerHTML = '';
+        pageRatios = [];
+        totalPagesCount = 0;
+        
+        const file = e.target.files[0];
+        if (!file) {
+            settingsContainer.style.display = 'none';
+            return;
+        }
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            loadedPdfBytes = arrayBuffer;
+            
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            const pages = pdfDoc.getPages();
+            totalPagesCount = pages.length;
+
+            if (totalPagesCount === 0) {
+                statusDiv.textContent = 'The uploaded PDF contains no pages.';
+                settingsContainer.style.display = 'none';
+                return;
+            }
+
+            // Set max attribute on the bulk page selector
+            sourcePageInput.max = totalPagesCount;
+
+            pages.forEach((page, index) => {
+                const pNum = index + 1;
+                const size = page.getSize();
+                const ratio = size.width / size.height;
+                pageRatios.push(ratio);
+
+                const section = document.createElement('div');
+                section.innerHTML = `
+                    <h3>Page ${pNum}</h3>
+                    <div class="page-settings">
+                        <div class="dimensions-row">
+                            <div class="input-group">
+                                <label for="p${pNum}-w">Width (pt)</label>
+                                <input type="number" id="p${pNum}-w" step="0.1" value="${size.width.toFixed(2)}">
+                            </div>
+                            <div class="input-group">
+                                <label for="p${pNum}-h">Height (pt)</label>
+                                <input type="number" id="p${pNum}-h" step="0.1" value="${size.height.toFixed(2)}">
+                            </div>
+                        </div>
+                        <div class="lock-group">
+                            <input type="checkbox" id="p${pNum}-lock" checked>
+                            <label for="p${pNum}-lock">Maintain aspect ratio</label>
+                        </div>
+                    </div>
+                `;
+                pagesList.appendChild(section);
+
+                // Attach aspect ratio listeners dynamically
+                const widthInput = document.getElementById(`p${pNum}-w`);
+                const heightInput = document.getElementById(`p${pNum}-h`);
+                const lockCheckbox = document.getElementById(`p${pNum}-lock`);
+
+                widthInput.addEventListener('input', (evt) => {
+                    if (!lockCheckbox.checked) return;
+                    const w = parseFloat(evt.target.value);
+                    if (!isNaN(w) && w > 0) {
+                        heightInput.value = (w / ratio).toFixed(2);
+                    }
+                });
+
+                heightInput.addEventListener('input', (evt) => {
+                    if (!lockCheckbox.checked) return;
+                    const h = parseFloat(evt.target.value);
+                    if (!isNaN(h) && h > 0) {
+                        widthInput.value = (h * ratio).toFixed(2);
+                    }
+                });
+            });
+
+            settingsContainer.style.display = 'block';
+
+        } catch (error) {
+            statusDiv.textContent = 'Error reading PDF file. Make sure it is a valid PDF.';
+            console.error(error);
+        }
+    });
+
+    // Bulk apply width from selected page to all pages
+    applyWidthAllBtn.addEventListener('click', () => {
+        statusDiv.textContent = '';
+        const sourcePage = parseInt(sourcePageInput.value, 10);
+
+        if (isNaN(sourcePage) || sourcePage < 1 || sourcePage > totalPagesCount) {
+            statusDiv.textContent = `Please enter a page number between 1 and ${totalPagesCount}.`;
+            return;
+        }
+
+        const sourceWidthInput = document.getElementById(`p${sourcePage}-w`);
+        const targetWidth = parseFloat(sourceWidthInput.value);
+
+        if (isNaN(targetWidth) || targetWidth <= 0) {
+            statusDiv.textContent = `Invalid width value on Page ${sourcePage}.`;
+            return;
+        }
+
+        for (let index = 0; index < totalPagesCount; index++) {
+            const pNum = index + 1;
+            const wInput = document.getElementById(`p${pNum}-w`);
+            
+            wInput.value = targetWidth.toFixed(2);
+            wInput.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // Bulk apply smallest width found across all pages
+    applySmallestWidthBtn.addEventListener('click', () => {
+        statusDiv.textContent = '';
+        if (totalPagesCount === 0) return;
+
+        let smallestWidth = Infinity;
+
+        for (let index = 0; index < totalPagesCount; index++) {
+            const pNum = index + 1;
+            const wInput = document.getElementById(`p${pNum}-w`);
+            const w = parseFloat(wInput.value);
+            if (!isNaN(w) && w > 0 && w < smallestWidth) {
+                smallestWidth = w;
+            }
+        }
+
+        if (smallestWidth === Infinity) {
+            statusDiv.textContent = 'Could not determine the smallest width.';
+            return;
+        }
+
+        for (let index = 0; index < totalPagesCount; index++) {
+            const pNum = index + 1;
+            const wInput = document.getElementById(`p${pNum}-w`);
+            
+            wInput.value = smallestWidth.toFixed(2);
+            wInput.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // Bulk apply percentage scaling based on current input field values
+    applyScaleBtn.addEventListener('click', () => {
+        statusDiv.textContent = '';
+        const percent = parseFloat(scalePercentInput.value);
+        const dimensionChoice = scaleDimensionSelect.value;
+
+        if (isNaN(percent) || percent <= 0) {
+            statusDiv.textContent = 'Please enter a valid positive percentage.';
+            return;
+        }
+
+        const factor = percent / 100;
+
+        for (let index = 0; index < totalPagesCount; index++) {
+            const pNum = index + 1;
+            const wInput = document.getElementById(`p${pNum}-w`);
+            const hInput = document.getElementById(`p${pNum}-h`);
+
+            const currentW = parseFloat(wInput.value);
+            const currentH = parseFloat(hInput.value);
+
+            if (dimensionChoice === 'both') {
+                if (!isNaN(currentW) && currentW > 0) wInput.value = (currentW * factor).toFixed(2);
+                if (!isNaN(currentH) && currentH > 0) hInput.value = (currentH * factor).toFixed(2);
+            } else if (dimensionChoice === 'width') {
+                if (!isNaN(currentW) && currentW > 0) {
+                    wInput.value = (currentW * factor).toFixed(2);
+                    wInput.dispatchEvent(new Event('input'));
+                }
+            } else if (dimensionChoice === 'height') {
+                if (!isNaN(currentH) && currentH > 0) {
+                    hInput.value = (currentH * factor).toFixed(2);
+                    hInput.dispatchEvent(new Event('input'));
+                }
+            }
+        }
+    });
+
+    // Process and download the modified PDF with content scaling
+    processBtn.addEventListener('click', async () => {
+        if (!loadedPdfBytes) return;
+
+        try {
+            processBtn.textContent = 'Processing...';
+            processBtn.disabled = true;
+
+            const originalPdfDoc = await PDFLib.PDFDocument.load(loadedPdfBytes);
+            const newPdfDoc = await PDFLib.PDFDocument.create();
+
+            for (let index = 0; index < totalPagesCount; index++) {
+                const pNum = index + 1;
+                const newWidth = parseFloat(document.getElementById(`p${pNum}-w`).value);
+                const newHeight = parseFloat(document.getElementById(`p${pNum}-h`).value);
+
+                // Embed original page content
+                const [embeddedPage] = await newPdfDoc.embedPdf(originalPdfDoc, [index]);
+                const originalWidth = embeddedPage.width;
+                const originalHeight = embeddedPage.height;
+
+                // Calculate scaling factors
+                const scaleX = newWidth / originalWidth;
+                const scaleY = newHeight / originalHeight;
+
+                // Add blank target-sized page and draw scaled content into it
+                const newPage = newPdfDoc.addPage([newWidth, newHeight]);
+                newPage.drawPage(embeddedPage, {
+                    x: 0,
+                    y: 0,
+                    xScale: scaleX,
+                    yScale: scaleY,
+                });
+            }
+
+            const pdfBytes = await newPdfDoc.save();
+
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resized_pages.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+        } catch (error) {
+            statusDiv.textContent = 'Error processing the PDF.';
+            console.error(error);
+        } finally {
+            processBtn.textContent = 'Apply & Download PDF';
+            processBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
