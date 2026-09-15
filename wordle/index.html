@@ -1176,6 +1176,10 @@
                     gridNodePath.push(null);
                 } else {
                     showGridMessage("No words found");
+                    
+                    const hasColors = gridStates[currentActiveRow].some(state => state !== '_');
+                    if (!hasColors) gridStates[currentActiveRow] = Array(5).fill('');
+
                     handleGridBack();
                     return;
                 }
