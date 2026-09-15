@@ -1176,8 +1176,7 @@
                     gridNodePath.push(null);
                 } else {
                     showGridMessage("No words found");
-                    if (gridStates[currentActiveRow].some(state => state !== '_'))
-                        handleGridBack();
+                    handleGridBack();
                     return;
                 }
             }
