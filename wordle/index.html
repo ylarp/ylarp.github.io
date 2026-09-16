@@ -1314,6 +1314,7 @@
         function downloadWordsForTries(triesNum) {
             const wordList = wordsByTriesMap[triesNum] || [];
             const uniqueWords = [...new Set(wordList)];
+            uniqueWords.sort(); // Sort words alphabetically
             const content = uniqueWords.join("\n");
 
             const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -1329,6 +1330,7 @@
 
         function downloadAllTotalWords() {
             const uniqueWords = [...new Set(globalSolutionsList.map(w => w.toUpperCase()))];
+            uniqueWords.sort(); // Sort words alphabetically
             const content = uniqueWords.join("\n");
 
             const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
