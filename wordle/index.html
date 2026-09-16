@@ -82,6 +82,7 @@
             margin: 0 auto 15px auto;
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 12px;
             box-sizing: border-box;
         }
@@ -105,6 +106,7 @@
             letter-spacing: 1px;
             text-transform: uppercase;
             transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+            text-decoration: none;
         }
 
         .btn-action:hover {
@@ -113,7 +115,28 @@
             transform: translateY(-1px);
         }
 
-        /* --- Standardized Pop Animation (1.5 Seconds Total) --- */
+        /* Solid White Info Link Button with ⓘ Emoji */
+        .info-link-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .info-link-btn:hover {
+            background: none;
+            border: none;
+            color: #ffffff;
+        }
+
+        /* --- Standardized Pop Animation --- */
         .stat-pop {
             animation: popIncrement 1.5s ease-in-out 1;
         }
@@ -128,13 +151,47 @@
             font-size: 13px;
         }
 
-        /* --- Stats Section --- */
-        #stats-container {
+        /* --- Stats Collapsible Section --- */
+        #stats-wrapper {
             max-width: 600px;
             margin: 0 auto 20px auto;
             background: var(--panel-bg);
-            padding: 15px;
             border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .stats-summary {
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .stats-summary:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: #ffffff;
+        }
+
+        .stats-summary-arrow {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        #stats-wrapper[open] .stats-summary-arrow {
+            transform: rotate(180deg);
+        }
+
+        #stats-container {
+            padding: 0 15px 15px 15px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -198,41 +255,30 @@
             letter-spacing: 0.5px;
         }
 
+        /* Solid White Borderless Info Icon inside Stats Boxes */
         .info-btn {
             position: absolute;
-            top: 6px;
+            top: 4px;
             left: 6px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background-color: #3a3a3c;
-            color: var(--light-gray);
-            font-size: 10px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border: 1px solid #4a4a4c;
-            transition: background-color 0.2s, color 0.2s, transform 0.15s ease;
+            padding: 0;
             user-select: none;
-            line-height: 1;
         }
 
         .info-btn:hover {
-            background-color: #565758;
             color: #ffffff;
-            transform: scale(1.1);
-        }
-
-        .download-icon-svg {
-            width: 10px;
-            height: 10px;
-            fill: currentColor;
         }
 
         .btn-icon-svg {
-            width: 14px;
-            height: 14px;
+            width: 20px;
+            height: 20px;
             fill: currentColor;
             display: inline-block;
             vertical-align: middle;
@@ -441,7 +487,7 @@
         .candidates-words {
             display: flex;
             align-items: center;
-            justify-content: center; /* Centers the badges horizontally */
+            justify-content: center;
             gap: 8px;
             flex-wrap: nowrap;
             width: 100%;
@@ -450,10 +496,8 @@
         }
 
         .candidate-tag {
-            /* Set a fixed size equivalent to 1/3 of the row minus gap spacing */
             width: calc((100% - 16px) / 3); 
-            flex: 0 0 auto; /* Prevent flexing so 2 items stay the same size as 3 */
-    
+            flex: 0 0 auto;
             background-color: #121213;
             color: var(--text-color);
             font-weight: 700;
@@ -621,14 +665,14 @@
         .letter.y { background-color: var(--yellow); }
         .letter._ { background-color: var(--gray); }
         
-        details {
+        #tree-container details {
             margin-left: 8px;
             border-left: 2px solid var(--border-color);
             padding-left: 8px;
             margin-top: 6px;
         }
 
-        summary {
+        #tree-container summary {
             cursor: pointer;
             list-style: none;
             display: flex;
@@ -639,11 +683,11 @@
             border-radius: 4px;
         }
 
-        summary:hover {
+        #tree-container summary:hover {
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        summary::-webkit-details-marker { display: none; }
+        #tree-container summary::-webkit-details-marker { display: none; }
         
         .arrow {
             font-size: 10px;
@@ -654,7 +698,7 @@
             text-align: center;
         }
 
-        details[open] > summary .arrow {
+        #tree-container details[open] > summary .arrow {
             transform: rotate(90deg);
         }
         
@@ -726,34 +770,41 @@
     </div>
 
     <div class="action-container">
+        <a href="https://github.com/ylarp/OptimalWordleSolver/blob/main/README.md" target="_blank" class="info-link-btn" title="Instructions on generating custom solution.txt">ⓘ</a>
         <label class="btn-action">
             <input type="file" id="file-upload" accept=".txt" />
             <span class="upload-icon">📂</span> Upload
         </label>
     </div>
 
-    <div id="stats-container" class="hidden">
-        <div class="grid-1x2">
-            <div class="stat-box">
-                <div class="stat-val" id="stat-avg">0.00</div>
-                <div class="stat-label">Average Tries</div>
+    <!-- Collapsible Stats Wrapper -->
+    <details id="stats-wrapper" class="hidden" open>
+        <summary class="stats-summary">
+            <span>Statistics</span>
+            <span class="stats-summary-arrow">▼</span>
+        </summary>
+        <div id="stats-container">
+            <div class="grid-1x2">
+                <div class="stat-box">
+                    <div class="stat-val" id="stat-avg">0.00</div>
+                    <div class="stat-label">Average Tries</div>
+                </div>
+                <div class="stat-box" id="stat-total-box">
+                    <button class="info-btn" onclick="downloadAllTotalWords()" title="Download total target word list">ⓘ</button>
+                    <div class="stat-val" id="stat-total" style="color: var(--yellow);">0</div>
+                    <div class="stat-label">Total Words</div>
+                </div>
             </div>
-            <div class="stat-box" id="stat-total-box">
-                <div class="info-btn" onclick="downloadAllTotalWords()" title="Download total target word list"><svg class="download-icon-svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
-                <div class="stat-val" id="stat-total" style="color: var(--yellow);">0</div>
-                <div class="stat-label">Total Words</div>
-            </div>
+            <div class="grid-2x2" id="distribution-row"></div>
+            <div class="tries-six-container hidden" id="six-tries-row"></div>
         </div>
-        <div class="grid-2x2" id="distribution-row"></div>
-        <div class="tries-six-container hidden" id="six-tries-row"></div>
-    </div>
+    </details>
 
     <div class="controls-container">
         <div class="search-box">
             <input type="text" id="search-input" class="search-input" placeholder="Search target word..." maxlength="5">
             <button id="search-btn" class="search-btn">
-                <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 11.99 14 9.5 14z"/></svg>
-                Search
+                <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 11.99 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
         </div>
         <div id="search-msg" class="search-msg"></div>
@@ -815,7 +866,7 @@
         let gridStates = Array(6).fill(null).map(() => Array(5).fill('_'));
         let gridNodePath = []; 
 
-        const DOWNLOAD_SVG = `<svg class="download-icon-svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>`;
+        const INFO_EMOJI = `ⓘ`;
 
         window.addEventListener('DOMContentLoaded', () => {
             fetch('./solution.txt')
@@ -1104,7 +1155,6 @@
 
             const feedback = gridStates[currentActiveRow].join('');
 
-            // Reset grid immediately if feedback is all 5 greens
             if (feedback === 'ggggg') {
                 resetGridWithState();
                 return;
@@ -1163,7 +1213,6 @@
                 currentActiveRow--;
             }
 
-            // Immediately close and hide the 2/3 words left element and list
             document.getElementById('grid-count-text').classList.add('hidden');
             document.getElementById('candidates-words').innerHTML = '';
             document.getElementById('grid-search-banner').classList.add('hidden');
@@ -1209,7 +1258,6 @@
             const searchInput = document.getElementById('search-input');
             const targetWord = searchInput.value.trim().toLowerCase();
 
-            // Strictly validate 5 lowercase alphabetical letters (no spacing, no non-alphabets/symbols/numbers)
             if (!/^[a-z]{5}$/.test(targetWord)) {
                 showSearchMessage('Invalid search term');
                 return;
@@ -1295,16 +1343,16 @@
         }
 
         function renderStats(totalWords, totalTries, distribution) {
-            const container = document.getElementById('stats-container');
+            const wrapper = document.getElementById('stats-wrapper');
             const sixRow = document.getElementById('six-tries-row');
             
             if (totalWords === 0) {
-                container.classList.add('hidden');
+                wrapper.classList.add('hidden');
                 sixRow.classList.add('hidden');
                 return;
             }
 
-            container.classList.remove('hidden');
+            wrapper.classList.remove('hidden');
             
             const avg = (totalTries / totalWords).toFixed(2);
             document.getElementById('stat-avg').innerText = avg;
@@ -1316,7 +1364,7 @@
                 const count = distribution[i] || 0;
                 dist2To5Html += `
                     <div class="stat-box small" id="stat-box-${i}">
-                        <div class="info-btn" onclick="downloadWordsForTries(${i})" title="Download words solved in ${i} tries">${DOWNLOAD_SVG}</div>
+                        <button class="info-btn" onclick="downloadWordsForTries(${i})" title="Download words solved in ${i} tries">${INFO_EMOJI}</button>
                         <div class="stat-val" id="stat-val-${i}">${count}</div>
                         <div class="stat-label">${i} Tries</div>
                     </div>
@@ -1330,7 +1378,7 @@
                 sixRow.classList.remove('hidden');
                 sixRow.innerHTML = `
                     <div class="stat-box small" id="stat-box-6">
-                        <div class="info-btn" onclick="downloadWordsForTries(6)" title="Download words solved in 6 tries">${DOWNLOAD_SVG}</div>
+                        <button class="info-btn" onclick="downloadWordsForTries(6)" title="Download words solved in 6 tries">${INFO_EMOJI}</button>
                         <div class="stat-val" id="stat-val-6">${countSix}</div>
                         <div class="stat-label">6 Tries</div>
                     </div>
