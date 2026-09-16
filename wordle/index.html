@@ -244,7 +244,7 @@
             margin: 0 auto 15px auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             align-items: center;
             width: 100%;
             box-sizing: border-box;
@@ -309,7 +309,11 @@
             letter-spacing: 1px;
             text-align: center;
             width: 100%;
-            min-height: 16px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px 0;
         }
 
         /* --- View Switcher Menu --- */
@@ -417,8 +421,7 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: var(--light-gray);
-            text-align: center;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
@@ -429,28 +432,32 @@
         .words-left-num {
             color: var(--green);
             font-weight: 800;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1;
+            display: inline-flex;
+            align-items: center;
         }
 
         .candidates-words {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             gap: 8px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             width: 100%;
             margin: 0;
+            box-sizing: border-box;
         }
 
         .candidate-tag {
+            flex: 1;
             background-color: #121213;
             color: var(--text-color);
             font-weight: 700;
-            padding: 8px 12px;
+            padding: 8px 0;
             border-radius: 6px;
-            font-size: 13px;
-            letter-spacing: 1.5px;
+            font-size: 12px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             border: 1px solid #3a3a3c;
             animation: popIn 0.2s ease-in-out;
@@ -459,6 +466,7 @@
             justify-content: center;
             line-height: 1;
             margin: 0;
+            box-sizing: border-box;
         }
 
         .wordle-grid {
@@ -1200,7 +1208,7 @@
 
             // Strictly validate 5 lowercase alphabetical letters (no spacing, no non-alphabets/symbols/numbers)
             if (!/^[a-z]{5}$/.test(targetWord)) {
-                showSearchMessage('Please enter a valid 5-letter alphabetical word');
+                showSearchMessage('Invalid search term');
                 return;
             }
 
