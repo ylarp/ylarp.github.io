@@ -1360,13 +1360,13 @@ trace _ggy_ yolks ____g crass ggggg
 trace _ggy_ yolks ___y_ crank ggggg
 trace _ggy_ yolks __y__ crawl ggggg
 trace _ggy_ yolks y____ crazy ggggg
-trace y_yg_ whelp _____ climb ____y batch ggggg
-trace y_yg_ whelp _____ climb ___y_ match ggggg
-trace y_yg_ whelp _____ climb g____ catch ghggg
-trace y_yg_ whelp ____y patch ggggg
-trace y_yg_ whelp ___y_ latch ggggg
-trace y_yg_ whelp _y___ hatch ggggg
-trace y_yg_ whelp g____ watch ggggg
+trace y_yg_ plumb _____ howdy _____ catch ggggg
+trace y_yg_ plumb _____ howdy __y__ watch ggggg
+trace y_yg_ plumb _____ howdy g____ hatch ggggg
+trace y_yg_ plumb ____y batch ggggg
+trace y_yg_ plumb ___y_ match ggggg
+trace y_yg_ plumb _y___ latch ggggg
+trace y_yg_ plumb g____ patch ggggg
 trace gy__y timer g__yg tenor ggggg
 trace gy__y timer g__gy threw ggggg
 trace gy__y timer g__gg tower ggggg
