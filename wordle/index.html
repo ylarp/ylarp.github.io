@@ -113,18 +113,6 @@
             transform: translateY(-1px);
         }
 
-        .btn-action.btn-download-top {
-            background-color: #2a2a2a;
-            border-color: var(--border-color);
-            color: var(--text-color);
-        }
-
-        .btn-action.btn-download-top:hover {
-            background-color: #3a3a3c;
-            border-color: #565758;
-            transform: translateY(-1px);
-        }
-
         /* --- Standardized Pop Animation (1.5 Seconds Total) --- */
         .stat-pop {
             animation: popIncrement 1.5s ease-in-out 1;
@@ -380,7 +368,7 @@
         .grid-search-banner {
             width: 100%;
             max-width: 360px;
-            min-height: 64px;
+            min-height: 84px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -388,9 +376,9 @@
             margin-bottom: 15px;
             padding: 12px 14px;
             background: #2a2a2a;
-            border-radius: 6px;
+            border-radius: 8px;
             box-sizing: border-box;
-            gap: 8px;
+            gap: 12px;
         }
 
         .badge-container {
@@ -423,22 +411,17 @@
             color: #fff;
         }
 
-        .badge-info.yellow {
-            background-color: var(--yellow);
-            color: #fff;
-        }
-
         .words-left-text {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             color: var(--light-gray);
             text-align: center;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             margin: 0;
             line-height: 1;
         }
@@ -446,34 +429,8 @@
         .words-left-num {
             color: var(--green);
             font-weight: 800;
-            font-size: 15px;
+            font-size: 16px;
             line-height: 1;
-        }
-
-        .add-tree-btn {
-            background-color: var(--green);
-            color: #fff;
-            border: none;
-            padding: 6px 18px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            box-sizing: border-box;
-            line-height: 1;
-            margin: 0;
-        }
-
-        .add-tree-btn:hover {
-            background-color: #6aaa64;
         }
 
         .candidates-words {
@@ -490,12 +447,12 @@
             background-color: #121213;
             color: var(--text-color);
             font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            border: 1px solid #4a4a4c;
+            border: 1px solid #3a3a3c;
             animation: popIn 0.2s ease-in-out;
             display: inline-flex;
             align-items: center;
@@ -762,9 +719,6 @@
             <input type="file" id="file-upload" accept=".txt" />
             <span class="upload-icon">📂</span> Upload
         </label>
-        <button id="btn-top-download" class="btn-action btn-download-top" onclick="downloadTreeTxt()">
-            <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download
-        </button>
     </div>
 
     <div id="stats-container" class="hidden">
@@ -787,7 +741,7 @@
         <div class="search-box">
             <input type="text" id="search-input" class="search-input" placeholder="Search target word..." maxlength="5">
             <button id="search-btn" class="search-btn">
-                <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 11.99 14 9.5 14z"/></svg>
                 Search
             </button>
         </div>
@@ -801,15 +755,8 @@
     <!-- Grid View -->
     <div id="grid-container">
         <div id="grid-search-banner" class="grid-search-banner hidden">
-            <div class="badge-container">
-                <button class="add-tree-btn hidden" id="grid-add-btn">
-                    <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                    Add
-                </button>
-                <span id="grid-search-badge" class="badge-info hidden"></span>
-            </div>
             <div id="grid-count-text" class="words-left-text hidden">
-                <span id="grid-count-num" class="words-left-num">0</span> Words Left
+                <span id="grid-count-num" class="words-left-num">0</span> WORDS LEFT
             </div>
             <div class="candidates-words" id="candidates-words"></div>
         </div>
@@ -973,8 +920,6 @@
             const banner = document.getElementById('grid-search-banner');
             const countText = document.getElementById('grid-count-text');
             const countNum = document.getElementById('grid-count-num');
-            const searchBadge = document.getElementById('grid-search-badge');
-            const addBtn = document.getElementById('grid-add-btn');
             const wordsEl = document.getElementById('candidates-words');
 
             const feedback = gridStates[currentActiveRow].join('');
@@ -996,10 +941,7 @@
             } else {
                 countText.classList.add('hidden');
                 wordsEl.innerHTML = '';
-
-                if (searchBadge.classList.contains('hidden') && addBtn.classList.contains('hidden')) {
-                    banner.classList.add('hidden');
-                }
+                banner.classList.add('hidden');
             }
         }
 
@@ -1213,12 +1155,7 @@
             // Immediately close and hide the 2/3 words left element and list
             document.getElementById('grid-count-text').classList.add('hidden');
             document.getElementById('candidates-words').innerHTML = '';
-            
-            const searchBadge = document.getElementById('grid-search-badge');
-            const addBtn = document.getElementById('grid-add-btn');
-            if (searchBadge.classList.contains('hidden') && addBtn.classList.contains('hidden')) {
-                document.getElementById('grid-search-banner').classList.add('hidden');
-            }
+            document.getElementById('grid-search-banner').classList.add('hidden');
 
             document.getElementById('grid-enter-btn').disabled = false;
             renderGrid();
@@ -1227,8 +1164,6 @@
         function resetGridWithState() {
             document.getElementById('search-input').value = '';
             document.getElementById('grid-search-banner').classList.add('hidden');
-            document.getElementById('grid-add-btn').classList.add('hidden');
-            document.getElementById('grid-search-badge').classList.add('hidden');
             document.getElementById('grid-msg').innerText = '';
             document.getElementById('search-msg').innerText = '';
             currentCalculatedPath = null;
@@ -1259,47 +1194,6 @@
             return null;
         }
 
-        function calculatePathForNewWord(root, targetWord) {
-            targetWord = targetWord.toLowerCase();
-            let candidates = [...new Set(globalSolutionsList)];
-            let path = [];
-            let currentNode = root;
-
-            while (currentNode) {
-                let guess = currentNode.guess;
-                let feedback = computeFeedback(guess, targetWord);
-                path.push({ guess: guess, feedback: feedback });
-
-                if (feedback === 'ggggg') return path;
-
-                candidates = filterCandidates(candidates, guess, feedback);
-                if (currentNode.branches[feedback]) {
-                    currentNode = currentNode.branches[feedback];
-                } else {
-                    currentNode = null;
-                }
-            }
-
-            while (candidates.length > 0) {
-                let nextGuess = candidates.includes(targetWord) ? targetWord : candidates[0];
-                let feedback = computeFeedback(nextGuess, targetWord);
-                
-                if (path.length > 0 && path[path.length - 1].guess === nextGuess) break;
-                
-                path.push({ guess: nextGuess, feedback: feedback });
-                if (feedback === 'ggggg') break;
-                
-                candidates = filterCandidates(candidates, nextGuess, feedback);
-            }
-
-            const lastStep = path[path.length - 1];
-            if (!lastStep || lastStep.guess !== targetWord || lastStep.feedback !== 'ggggg') {
-                path.push({ guess: targetWord, feedback: 'ggggg' });
-            }
-
-            return path;
-        }
-
         function handleSearch() {
             const searchInput = document.getElementById('search-input');
             const targetWord = searchInput.value.trim().toLowerCase();
@@ -1316,43 +1210,24 @@
             }
 
             let path = findPathInTree(globalRootNode, targetWord);
-            let isCalculated = false;
 
             if (!path) {
-                path = calculatePathForNewWord(globalRootNode, targetWord);
-                isCalculated = true;
+                showSearchMessage('Word not found');
+                return;
             }
 
-            currentCalculatedPath = isCalculated ? path : null;
+            currentCalculatedPath = null;
             currentSearchTarget = targetWord;
 
-            renderGridSearchResult(targetWord, path, isCalculated);
+            renderGridSearchResult(targetWord, path);
             switchView('grid');
         }
 
-        function renderGridSearchResult(targetWord, path, isCalculated) {
+        function renderGridSearchResult(targetWord, path) {
             initGridUI();
 
             document.getElementById('grid-back-btn').classList.add('hidden');
             document.getElementById('grid-enter-btn').classList.add('hidden');
-
-            const banner = document.getElementById('grid-search-banner');
-            const badge = document.getElementById('grid-search-badge');
-            const addBtn = document.getElementById('grid-add-btn');
-
-            banner.classList.remove('hidden');
-            badge.classList.remove('hidden');
-
-            if (isCalculated) {
-                badge.className = 'badge-info yellow';
-                badge.innerText = 'New Word';
-                addBtn.classList.remove('hidden');
-                addBtn.onclick = addCalculatedPathToTree;
-            } else {
-                badge.className = 'badge-info green';
-                badge.innerText = 'Found';
-                addBtn.classList.add('hidden');
-            }
 
             path.forEach((step, idx) => {
                 if (idx < 6) {
@@ -1364,115 +1239,6 @@
             currentActiveRow = Math.min(path.length - 1, 5);
             updateCandidatesUI();
             renderGrid();
-        }
-
-        function downloadTreeTxt() {
-            if (!rawTxtContent) return;
-
-            const blob = new Blob([rawTxtContent], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'solution.txt';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-
-        function addCalculatedPathToTree() {
-            if (!currentCalculatedPath || currentCalculatedPath.length === 0) return;
-
-            const triesForNewWord = currentCalculatedPath.length;
-
-            let stepsToAppend = currentCalculatedPath;
-            let lineTokens = [];
-            stepsToAppend.forEach((step, idx) => {
-                if (idx > 0) {
-                    lineTokens.push(step.guess);
-                }
-                lineTokens.push(step.feedback);
-            });
-
-            const newLine = lineTokens.join(" ");
-            const updatedTxt = rawTxtContent ? `${rawTxtContent}\n${newLine}` : newLine;
-
-            // Scroll up immediately when Add button is clicked
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Trigger animations after a 0.5-second delay
-            setTimeout(() => {
-                // Animate Download Button with popup style matching total words (no green glow)
-                const downloadBtn = document.getElementById('btn-top-download');
-                downloadBtn.classList.add('stat-pop');
-                setTimeout(() => {
-                    downloadBtn.classList.remove('stat-pop');
-                }, 1500);
-
-                // Perform synchronized stats increment animation for total words AND corresponding x tries
-                animateStatsIncrement(triesForNewWord);
-
-                // Delay reprocessing data until after the 1.5s animation completes to prevent resetting DOM nodes prematurely
-                setTimeout(() => {
-                    processData(updatedTxt, false);
-                    const addedPath = [...currentCalculatedPath];
-                    currentCalculatedPath = null;
-                    renderGridSearchResult(currentSearchTarget, addedPath, false);
-                }, 1500);
-            }, 500);
-        }
-
-        function animateStatsIncrement(triesCount) {
-            const totalEl = document.getElementById('stat-total');
-            const totalBox = document.getElementById('stat-total-box');
-            const oldTotal = currentTotalWords;
-            const newTotal = oldTotal + 1;
-
-            if (totalEl && totalBox) {
-                totalEl.innerText = `${oldTotal} (+1)`;
-                totalBox.classList.add('stat-pop');
-                
-                setTimeout(() => {
-                    totalEl.innerText = newTotal;
-                }, 750);
-
-                setTimeout(() => {
-                    totalBox.classList.remove('stat-pop');
-                }, 1500);
-            }
-
-            let targetValEl = document.getElementById(`stat-val-${triesCount}`);
-            let targetBoxEl = document.getElementById(`stat-box-${triesCount}`);
-
-            if (triesCount === 6 && (!targetValEl || !targetBoxEl)) {
-                const sixRow = document.getElementById('six-tries-row');
-                sixRow.classList.remove('hidden');
-                sixRow.innerHTML = `
-                    <div class="stat-box small" id="stat-box-6">
-                        <div class="info-btn" onclick="downloadWordsForTries(6)" title="Download words solved in 6 tries">${DOWNLOAD_SVG}</div>
-                        <div class="stat-val" id="stat-val-6">0</div>
-                        <div class="stat-label">6 Tries</div>
-                    </div>
-                `;
-                targetValEl = document.getElementById('stat-val-6');
-                targetBoxEl = document.getElementById('stat-box-6');
-            }
-
-            if (targetValEl && targetBoxEl) {
-                const oldVal = currentDistribution[triesCount] || 0;
-                const newVal = oldVal + 1;
-
-                targetValEl.innerText = `${oldVal} (+1)`;
-                targetBoxEl.classList.add('stat-pop');
-
-                setTimeout(() => {
-                    targetValEl.innerText = newVal;
-                }, 750);
-
-                setTimeout(() => {
-                    targetBoxEl.classList.remove('stat-pop');
-                }, 1500);
-            }
         }
 
         function downloadWordsForTries(triesNum) {
@@ -1509,8 +1275,6 @@
         function clearSearch() {
             document.getElementById('search-input').value = '';
             document.getElementById('grid-search-banner').classList.add('hidden');
-            document.getElementById('grid-add-btn').classList.add('hidden');
-            document.getElementById('grid-search-badge').classList.add('hidden');
             document.getElementById('grid-count-text').classList.add('hidden');
             document.getElementById('candidates-words').innerHTML = '';
             document.getElementById('grid-msg').innerText = '';
