@@ -441,7 +441,7 @@
         .candidates-words {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center; /* Centers the badges horizontally */
             gap: 8px;
             flex-wrap: nowrap;
             width: 100%;
@@ -450,7 +450,10 @@
         }
 
         .candidate-tag {
-            flex: 1;
+            /* Set a fixed size equivalent to 1/3 of the row minus gap spacing */
+            width: calc((100% - 16px) / 3); 
+            flex: 0 0 auto; /* Prevent flexing so 2 items stay the same size as 3 */
+    
             background-color: #121213;
             color: var(--text-color);
             font-weight: 700;
