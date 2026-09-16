@@ -1111,7 +1111,7 @@ large
 larva
 +++++++laser
 -------lasso
--------latch
+latch
 later
 +++++++latex
 lathe
