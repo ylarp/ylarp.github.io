@@ -984,6 +984,7 @@ trace __yy_ monad yg_y_ comma ggggg
 trace __yy_ monad g__y_ magic ggggg
 trace __yy_ monad g_gy_ manic ggggg
 trace __yy_ monad gg_y_ mocha ggggg
+trace _g__g bonds _____ prize _gg_g grime ggggg
 trace _g__g bonds _____ prize ygg_g gripe ggggg
 trace _g__g bonds _____ prize ggg_g prime ggggg
 trace _g__g bonds _____ prize ggggg
