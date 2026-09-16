@@ -1360,8 +1360,8 @@ trace _ggy_ yolks ____g crass ggggg
 trace _ggy_ yolks ___y_ crank ggggg
 trace _ggy_ yolks __y__ crawl ggggg
 trace _ggy_ yolks y____ crazy ggggg
-trace y_yg_ plumb _____ howdy _____ catch ggggg
-trace y_yg_ plumb _____ howdy __y__ watch ggggg
+trace y_yg_ plumb _____ howdy y____ catch ggggg
+trace y_yg_ plumb _____ howdy y_y__ watch ggggg
 trace y_yg_ plumb _____ howdy g____ hatch ggggg
 trace y_yg_ plumb ____y batch ggggg
 trace y_yg_ plumb ___y_ match ggggg
