@@ -255,7 +255,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Solid White Borderless Info Icon inside Stats Boxes */
+        /* Solid White Borderless Info/Download Icon inside Stats Boxes */
         .info-btn {
             position: absolute;
             top: 4px;
@@ -268,12 +268,22 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            padding: 0;
+            padding: 2px;
             user-select: none;
+            opacity: 0.85;
+            transition: opacity 0.2s ease;
         }
 
         .info-btn:hover {
             color: #ffffff;
+            opacity: 1;
+        }
+
+        .stat-download-svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+            display: block;
         }
 
         .btn-icon-svg {
@@ -790,7 +800,9 @@
                     <div class="stat-label">Average Tries</div>
                 </div>
                 <div class="stat-box" id="stat-total-box">
-                    <button class="info-btn" onclick="downloadAllTotalWords()" title="Download total target word list">ⓘ</button>
+                    <button class="info-btn" onclick="downloadAllTotalWords()" title="Download total target word list">
+                        <svg class="stat-download-svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    </button>
                     <div class="stat-val" id="stat-total" style="color: var(--yellow);">0</div>
                     <div class="stat-label">Total Words</div>
                 </div>
@@ -866,7 +878,7 @@
         let gridStates = Array(6).fill(null).map(() => Array(5).fill('_'));
         let gridNodePath = []; 
 
-        const INFO_EMOJI = `ⓘ`;
+        const DOWNLOAD_SVG_ICON = `<svg class="stat-download-svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>`;
 
         window.addEventListener('DOMContentLoaded', () => {
             fetch('./solution.txt')
@@ -1364,7 +1376,7 @@
                 const count = distribution[i] || 0;
                 dist2To5Html += `
                     <div class="stat-box small" id="stat-box-${i}">
-                        <button class="info-btn" onclick="downloadWordsForTries(${i})" title="Download words solved in ${i} tries">${INFO_EMOJI}</button>
+                        <button class="info-btn" onclick="downloadWordsForTries(${i})" title="Download words solved in ${i} tries">${DOWNLOAD_SVG_ICON}</button>
                         <div class="stat-val" id="stat-val-${i}">${count}</div>
                         <div class="stat-label">${i} Tries</div>
                     </div>
@@ -1378,7 +1390,7 @@
                 sixRow.classList.remove('hidden');
                 sixRow.innerHTML = `
                     <div class="stat-box small" id="stat-box-6">
-                        <button class="info-btn" onclick="downloadWordsForTries(6)" title="Download words solved in 6 tries">${INFO_EMOJI}</button>
+                        <button class="info-btn" onclick="downloadWordsForTries(6)" title="Download words solved in 6 tries">${DOWNLOAD_SVG_ICON}</button>
                         <div class="stat-val" id="stat-val-6">${countSix}</div>
                         <div class="stat-label">6 Tries</div>
                     </div>
