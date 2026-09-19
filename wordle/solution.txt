@@ -59,9 +59,10 @@ trace _____ diols __yy_ nylon ggggg
 trace _____ diols __yg_ jolly _gygg lowly ggggg
 trace _____ diols __yg_ jolly _gggg folly ggggg
 trace _____ diols __yg_ jolly ggggg
-trace _____ diols __gy_ gloom _gg__ flown ggggg
-trace _____ diols __gy_ gloom _gggg bloom ggggg
-trace _____ diols __gy_ gloom ggggg
+trace _____ diols __gy_ blown _gg__ gloom ggggg
+trace _____ diols __gy_ blown _gggg flown ggggg
+trace _____ diols __gy_ blown ggg__ bloom ggggg
+trace _____ diols __gy_ blown ggggg
 trace _____ diols _y___ whiny __yy_ fungi ggggg
 trace _____ diols _y___ whiny __gyg unify ggggg
 trace _____ diols _y___ whiny ggggg
