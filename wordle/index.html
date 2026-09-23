@@ -525,11 +525,51 @@
             box-sizing: border-box;
         }
 
+        .grid-and-arrows-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
         .wordle-grid {
             display: grid;
             grid-template-rows: repeat(6, 1fr);
             gap: 6px;
-            margin-bottom: 20px;
+        }
+
+        .grid-arrows-column {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            gap: 6px;
+            align-items: center;
+        }
+
+        .grid-row-jump-btn {
+            width: 24px;
+            height: 52px;
+            background: none;
+            border: none;
+            color: var(--light-gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: color 0.2s ease, opacity 0.2s ease;
+            padding: 0;
+            user-select: none;
+            opacity: 0.7;
+        }
+
+        .grid-row-jump-btn:hover {
+            color: #ffffff;
+            opacity: 1;
+        }
+
+        .grid-row-jump-placeholder {
+            width: 24px;
+            height: 52px;
         }
 
         .grid-row {
@@ -690,10 +730,16 @@
             user-select: none;
             padding: 6px 0;
             border-radius: 4px;
+            transition: background-color 0.2s ease;
         }
 
         #tree-container summary:hover {
             background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        #tree-container summary.highlighted-tree-node {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
         }
 
         #tree-container summary::-webkit-details-marker { display: none; }
@@ -758,6 +804,9 @@
                 height: 44px;
                 font-size: 20px;
             }
+            .grid-row-jump-btn, .grid-row-jump-placeholder {
+                height: 44px;
+            }
             .grid-actions {
                 max-width: 300px;
             }
@@ -815,7 +864,7 @@
         <div class="search-box">
             <input type="text" id="search-input" class="search-input" placeholder="Search target word..." maxlength="5">
             <button id="search-btn" class="search-btn">
-                <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 11.99 14 9.5 11.99 14 9.5 14z"/></svg>
+                <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 11.99 14 9.5 11.99 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
         </div>
         <div id="search-msg" class="search-msg"></div>
@@ -834,7 +883,11 @@
             <div class="candidates-words" id="candidates-words"></div>
         </div>
 
-        <div class="wordle-grid" id="wordle-grid"></div>
+        <div class="grid-and-arrows-wrapper">
+            <div class="wordle-grid" id="wordle-grid"></div>
+            <div class="grid-arrows-column" id="grid-arrows-column"></div>
+        </div>
+
         <div class="grid-actions">
             <button class="btn-grid btn-reset" id="grid-reset-btn">
                 <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
@@ -879,7 +932,13 @@
 
         const DOWNLOAD_SVG_ICON = `<svg class="stat-download-svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>`;
 
+        function clearTreeHighlight() {
+            document.querySelectorAll('.highlighted-tree-node').forEach(el => el.classList.remove('highlighted-tree-node'));
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener('pointerdown', clearTreeHighlight);
+
             fetch('./solution.txt')
                 .then(response => {
                     if (!response.ok) throw new Error('Default file not found');
@@ -1124,12 +1183,15 @@
 
         function renderGrid() {
             const gridEl = document.getElementById('wordle-grid');
+            const arrowsEl = document.getElementById('grid-arrows-column');
             gridEl.innerHTML = '';
+            arrowsEl.innerHTML = '';
 
             for (let r = 0; r < 6; r++) {
                 const rowEl = document.createElement('div');
                 rowEl.className = `grid-row ${r === currentActiveRow ? 'active' : ''}`;
                 const word = gridGuesses[r] || '';
+                const feedback = gridStates[r].join('');
 
                 for (let c = 0; c < 5; c++) {
                     const tile = document.createElement('div');
@@ -1145,7 +1207,85 @@
 
                     rowEl.appendChild(tile);
                 }
+
                 gridEl.appendChild(rowEl);
+
+                if (word && word.length === 5 && r <= currentActiveRow && feedback !== 'ggggg') {
+                    const jumpBtn = document.createElement('button');
+                    jumpBtn.className = 'grid-row-jump-btn';
+                    jumpBtn.innerHTML = '▶';
+                    jumpBtn.title = 'Jump to this branch in Tree view';
+                    jumpBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        jumpToTreeNode(r);
+                    });
+                    arrowsEl.appendChild(jumpBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'grid-row-jump-placeholder';
+                    arrowsEl.appendChild(placeholder);
+                }
+            }
+        }
+
+        function jumpToTreeNode(rowIndex) {
+            let pathSequence = [];
+            for (let i = 0; i <= rowIndex; i++) {
+                if (!gridGuesses[i]) break;
+                pathSequence.push({
+                    guess: gridGuesses[i].toLowerCase(),
+                    feedback: gridStates[i].join('')
+                });
+            }
+
+            switchView('tree');
+
+            const treeContainer = document.getElementById('tree-container');
+            let currentScope = treeContainer;
+            let lastSummary = null;
+
+            for (let step of pathSequence) {
+                const detailsElements = Array.from(currentScope.children).filter(child => child.tagName === 'DETAILS');
+                let foundMatch = false;
+
+                for (let det of detailsElements) {
+                    const summary = det.querySelector('summary');
+                    if (!summary) continue;
+
+                    const summaryWordRow = summary.querySelector('.word-row');
+                    if (!summaryWordRow) continue;
+
+                    let summaryWord = '';
+                    let summaryFb = '';
+
+                    const letters = summaryWordRow.querySelectorAll('.letter');
+                    letters.forEach(l => {
+                        summaryWord += l.innerText.toLowerCase();
+                        if (l.classList.contains('g')) summaryFb += 'g';
+                        else if (l.classList.contains('y')) summaryFb += 'y';
+                        else summaryFb += '_';
+                    });
+
+                    if (summaryWord === step.guess && summaryFb === step.feedback) {
+                        det.open = true;
+                        currentScope = det;
+                        lastSummary = summary;
+                        foundMatch = true;
+                        break;
+                    }
+                }
+
+                if (!foundMatch) break;
+            }
+
+            if (lastSummary) {
+                clearTreeHighlight();
+                setTimeout(() => {
+                    lastSummary.classList.add('highlighted-tree-node');
+                    lastSummary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 10);
+            } else {
+                showSearchMessage('Branch not found in tree');
             }
         }
 
