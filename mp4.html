@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barebones MP4 & VTT Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        /* Top Right Close / Clear Session Button */
+        #clear-session-btn {
+            position: fixed;
+            top: Clamp(12px, 3vw, 24px);
+            right: clamp(12px, 3vw, 24px);
+            z-index: 100;
+            width: clamp(36px, 6vw, 44px);
+            height: clamp(36px, 6vw, 44px);
+            background: rgba(20, 20, 20, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: background-color 0.2s, transform 0.15s ease, border-color 0.2s;
+            outline: none;
+            padding: 0;
+        }
+
+        #clear-session-btn svg {
+            width: 50%;
+            height: 50%;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        #clear-session-btn:hover {
+            background: rgba(220, 53, 69, 0.85);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.08);
+        }
+
+        #clear-session-btn:active {
+            transform: scale(0.95);
+        }
+
+        #file-input-container {
+            position: absolute;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(20, 20, 20, 0.85);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            max-width: 90vw;
+            width: 400px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        input[type="file"] {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button.action-btn {
+            flex: 1;
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button.action-btn:hover {
+            background-color: #0056b3;
+        }
+
+        button.action-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        #resetBtn {
+            background-color: #dc3545;
+            display: none;
+        }
+
+        #resetBtn:hover {
+            background-color: #a71d2a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Clear Session Floating Action Button -->
+    <button id="clear-session-btn" title="Clear Session" aria-label="Clear Session">
+        <svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+
+    <div id="file-input-container">
+        <div class="input-group">
+            <label for="videoInput">Select MP4 Video (Required):</label>
+            <input type="file" id="videoInput" accept="video/mp4">
+        </div>
+        <div class="input-group">
+            <label for="subtitleInput">Select VTT Subtitle (Optional):</label>
+            <input type="file" id="subtitleInput" accept=".vtt">
+        </div>
+        <div class="button-group">
+            <button id="playBtn" class="action-btn" disabled>Play Video</button>
+            <button id="resetBtn" class="action-btn">Clear Saved Session</button>
+        </div>
+    </div>
+
+    <video id="videoPlayer" controls autoplay></video>
+
+    <script>
+        const videoInput = document.getElementById('videoInput');
+        const subtitleInput = document.getElementById('subtitleInput');
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const clearSessionBtn = document.getElementById('clear-session-btn');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const fileContainer = document.getElementById('file-input-container');
+
+        let db;
+        const DB_NAME = 'MediaPlayerDB';
+        const STORE_NAME = 'mediaSession';
+
+        // Initialize IndexedDB
+        const dbRequest = indexedDB.open(DB_NAME, 1);
+
+        dbRequest.onupgradeneeded = function(e) {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME);
+            }
+        };
+
+        dbRequest.onsuccess = function(e) {
+            db = e.target.result;
+            checkSavedSession();
+        };
+
+        dbRequest.onerror = function(e) {
+            console.error("IndexedDB error:", e.target.error);
+        };
+
+        // Enable Play button only when a video is selected
+        videoInput.addEventListener('change', function() {
+            playBtn.disabled = !this.files[0];
+        });
+
+        // Play button handler
+        playBtn.addEventListener('click', async function() {
+            const videoFile = videoInput.files[0];
+            const subtitleFile = subtitleInput.files[0];
+
+            if (!videoFile) return;
+
+            // Save video and subtitle files into IndexedDB
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.put(videoFile, 'currentVideo');
+            
+            if (subtitleFile) {
+                store.put(subtitleFile, 'currentSubtitle');
+            } else {
+                store.delete('currentSubtitle');
+            }
+
+            // Start player with newly uploaded files
+            loadPlayerUI(videoFile, subtitleFile, 0);
+        });
+
+        // Check IndexedDB for existing session on page load
+        function checkSavedSession() {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+
+            const videoReq = store.get('currentVideo');
+            const subReq = store.get('currentSubtitle');
+            const timeReq = store.get('currentTime');
+
+            tx.oncomplete = function() {
+                if (videoReq.result) {
+                    // Show "Clear Saved Session" button if session exists
+                    resetBtn.style.display = 'block';
+
+                    const savedVideo = videoReq.result;
+                    const savedSub = subReq.result || null;
+                    const savedTime = timeReq.result || 0;
+
+                    // Automatically restore session
+                    loadPlayerUI(savedVideo, savedSub, savedTime);
+                }
+            };
+        }
+
+        // Initialize the player state and DOM elements
+        function loadPlayerUI(videoFile, subtitleFile, startTime) {
+            videoPlayer.src = URL.createObjectURL(videoFile);
+
+            // Reset tracks
+            const existingTracks = videoPlayer.querySelectorAll('track');
+            existingTracks.forEach(track => track.remove());
+
+            if (subtitleFile) {
+                const track = document.createElement('track');
+                track.kind = 'subtitles';
+                track.label = 'Subtitles';
+                track.srclang = 'en';
+                track.src = URL.createObjectURL(subtitleFile);
+                track.default = true;
+                videoPlayer.appendChild(track);
+            }
+
+            videoPlayer.style.display = 'block';
+            fileContainer.style.display = 'none';
+
+            videoPlayer.addEventListener('loadedmetadata', function() {
+                if (startTime > 0) {
+                    videoPlayer.currentTime = startTime;
+                }
+                videoPlayer.play();
+            }, { once: true });
+        }
+
+        // Save current timestamp to IndexedDB
+        function saveTimestamp() {
+            if (db && videoPlayer.currentTime > 0) {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                store.put(videoPlayer.currentTime, 'currentTime');
+            }
+        }
+
+        // Event listeners to lock state during mobile suspension
+        videoPlayer.addEventListener('timeupdate', saveTimestamp);
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                saveTimestamp();
+            }
+        });
+
+        window.addEventListener('pagehide', saveTimestamp);
+        window.addEventListener('freeze', saveTimestamp);
+
+        // Core Session Clearing Handler
+        function clearSession() {
+            if (db) {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).clear();
+                tx.oncomplete = function() {
+                    location.reload();
+                };
+            } else {
+                location.reload();
+            }
+        }
+
+        // Event Listeners for Reset Actions
+        resetBtn.addEventListener('click', clearSession);
+        clearSessionBtn.addEventListener('click', clearSession);
+    </script>
+
+</body>
+</html>
